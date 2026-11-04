@@ -1,0 +1,711 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>LUST</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,380;0,9..144,500;0,9..144,620;1,9..144,440;1,9..144,560&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* ============================================================
+     LUST — a catalog of everything you want.
+     Layout: single-column editorial hero, a capture bar for new
+     links, and a filterable grid catalog below. Deliberately a
+     single dark world (a velvet, after-hours ledger) rather than
+     a light/dark pair — see design-plan note at point of use.
+     ============================================================ */
+  :root{
+    --bg: #140d11;
+    --surface: #1c1216;
+    --surface-raised: #26181e;
+    --line: rgba(244,231,226,0.11);
+    --line-strong: rgba(244,231,226,0.2);
+    --fg: #f3e7e1;
+    --fg-muted: #ad9298;
+    --fg-faint: #766065;
+    --accent: #d9a254;
+    --accent-dim: #a87a3c;
+    --accent-soft: rgba(217,162,84,0.13);
+    --rose: #c3566a;
+    --rose-soft: rgba(195,86,106,0.14);
+    color-scheme: dark;
+
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Spectral', Georgia, 'Times New Roman', serif;
+    --font-mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    margin: 0;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+    min-height: 100%;
+    background-image:
+      radial-gradient(ellipse 900px 480px at 15% -10%, rgba(217,162,84,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 420px at 100% 10%, rgba(195,86,106,0.08), transparent 55%);
+    background-repeat: no-repeat;
+  }
+
+  ::selection{ background: var(--accent-soft); color: var(--fg); }
+
+  a{ color: inherit; }
+
+  .wrap{ max-width: 920px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  header.site{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 28px;
+    padding-bottom: 20px;
+  }
+  .wordmark{
+    font-family: var(--font-display);
+    font-weight: 620;
+    font-size: 1.5rem;
+    letter-spacing: 0.03em;
+    color: var(--fg);
+  }
+  .wordmark em{
+    font-style: italic;
+    font-weight: 440;
+    color: var(--accent);
+  }
+  .stat-chip{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    white-space: nowrap;
+  }
+  .stat-chip strong{ color: var(--accent); font-weight: 600; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding-block: 12px 36px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin: 0 0 14px;
+  }
+  h1.headline{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.1rem, 5.4vw, 3.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+    max-width: 14ch;
+  }
+  h1.headline em{
+    font-style: italic;
+    font-weight: 440;
+    color: var(--accent);
+  }
+  .sub{
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--fg-muted);
+    max-width: 52ch;
+    margin: 0;
+  }
+
+  /* ---------- capture bar ---------- */
+  .capture{
+    margin-top: 28px;
+    background: linear-gradient(175deg, var(--surface-raised), var(--surface));
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .capture-label{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin: 0 0 14px;
+  }
+  form#add-form{
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1.4fr 1fr 0.8fr;
+  }
+  .field{ display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field.full{ grid-column: 1 / -1; }
+  .field label{
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .field input, .field select, .field textarea{
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    width: 100%;
+  }
+  .field textarea{ resize: vertical; min-height: 44px; font-family: var(--font-body); }
+  .field select{ appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%), linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%); background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 32px; }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline: 2px solid var(--accent-dim);
+    outline-offset: 1px;
+    border-color: var(--accent-dim);
+  }
+  .field input::placeholder, .field textarea::placeholder{ color: var(--fg-faint); }
+
+  .capture-foot{
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 2px;
+    flex-wrap: wrap;
+  }
+  .capture-note{
+    font-size: 0.82rem;
+    color: var(--fg-faint);
+  }
+  button.primary{
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #1a1109;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 22px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.12s ease, background 0.12s ease;
+    white-space: nowrap;
+  }
+  button.primary:hover{ background: #e4b26a; }
+  button.primary:active{ transform: scale(0.97); }
+  button.primary:disabled{ opacity: 0.5; cursor: wait; }
+
+  .form-msg{
+    grid-column: 1 / -1;
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    color: var(--rose);
+    min-height: 0;
+  }
+  .form-msg[hidden]{ display: none; }
+
+  /* ---------- catalog controls ---------- */
+  .catalog{ padding-block: 34px 60px; }
+  .catalog-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .catalog-title{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 440;
+    font-size: 1.3rem;
+    color: var(--fg);
+  }
+  input#search{
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    padding: 8px 16px;
+    width: 220px;
+    max-width: 100%;
+  }
+  input#search:focus{ outline: 2px solid var(--accent-dim); outline-offset: 1px; }
+  input#search::placeholder{ color: var(--fg-faint); }
+
+  /* ---------- grid ---------- */
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    position: relative;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .card:hover{ border-color: var(--line-strong); background: var(--surface-raised); }
+  .card-top{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .chip{
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 4px 9px;
+    white-space: nowrap;
+  }
+  .card-del{
+    background: none;
+    border: none;
+    color: var(--fg-faint);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+  .card-del:hover{ color: var(--rose); background: var(--rose-soft); }
+
+  .card-title{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.08rem;
+    line-height: 1.3;
+    text-decoration: none;
+    display: block;
+    word-break: break-word;
+  }
+  .card-title:hover{ color: var(--accent); }
+
+  .card-domain{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--fg-faint);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+  .card-domain .dot{
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent-dim);
+    flex: none;
+  }
+  .card-domain span{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .card-note{
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--fg-muted);
+    margin: 0;
+  }
+
+  .card-foot{
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-faint);
+  }
+
+  /* ---------- empty / loading states ---------- */
+  .state{
+    text-align: center;
+    padding: 56px 20px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 14px;
+    color: var(--fg-muted);
+  }
+  .state p.lead{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--fg);
+    margin: 0 0 8px;
+  }
+  .state p.sub{ font-size: 0.9rem; margin: 0; color: var(--fg-faint); }
+
+  /* ---------- footer ---------- */
+  footer.site{
+    padding-block: 24px 40px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  footer.site .fmark{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--fg-faint);
+  }
+  footer.site .fnote{
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  @media (max-width: 620px){
+    form#add-form{ grid-template-columns: 1fr 1fr; }
+    .field.full, .field:nth-child(1){ grid-column: 1 / -1; }
+    .catalog-head{ align-items: flex-start; }
+    input#search{ width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="site">
+    <div class="wordmark">L<em>U</em>ST</div>
+    <div class="stat-chip" id="stat-chip">loading…</div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">A catalog of wanting</p>
+    <h1 class="headline">Keep what you <em>crave.</em></h1>
+    <p class="sub">Every link worth coming back to — an article, a track, a pair of boots, a town you want to visit — kept in one shamelessly honest list.</p>
+
+    <div class="capture">
+      <p class="capture-label">Add something</p>
+      <form id="add-form" autocomplete="off">
+        <div class="field">
+          <label for="f-url">Link</label>
+          <input id="f-url" name="url" type="url" inputmode="url" placeholder="https://&hellip;" required>
+        </div>
+        <div class="field">
+          <label for="f-title">Title</label>
+          <input id="f-title" name="title" type="text" placeholder="What is it?" required maxlength="120">
+        </div>
+        <div class="field">
+          <label for="f-category">Craving</label>
+          <select id="f-category" name="category">
+            <option value="Read">Read</option>
+            <option value="Watch">Watch</option>
+            <option value="Listen">Listen</option>
+            <option value="Visit">Visit</option>
+            <option value="Buy">Buy</option>
+            <option value="Make">Make</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="f-note">Note (optional)</label>
+          <textarea id="f-note" name="note" placeholder="Why you want it&hellip;" maxlength="300"></textarea>
+        </div>
+        <div class="capture-foot">
+          <span class="capture-note" id="capture-note">Visible to anyone with this page.</span>
+          <button class="primary" type="submit" id="submit-btn">Keep it</button>
+        </div>
+        <p class="form-msg" id="form-msg" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="catalog">
+    <div class="catalog-head">
+      <span class="catalog-title">The list</span>
+      <input id="search" type="search" placeholder="Search your list&hellip;">
+    </div>
+    <div id="catalog-body">
+      <div class="state"><p class="lead">Opening the ledger&hellip;</p><p class="sub">One moment.</p></div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <span class="fmark">L<em>u</em>st</span>
+    <span class="fnote">keep what you want</span>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CATS = ["Read","Watch","Listen","Visit","Buy","Make","Other"];
+  var state = {
+    items: [],
+    loaded: false,
+    query: "",
+    canWrite: null, // null = unknown, true/false once told
+    db: null,
+    col: null
+  };
+
+  var els = {
+    statChip: document.getElementById('stat-chip'),
+    body: document.getElementById('catalog-body'),
+    search: document.getElementById('search'),
+    form: document.getElementById('add-form'),
+    submitBtn: document.getElementById('submit-btn'),
+    formMsg: document.getElementById('form-msg'),
+    captureNote: document.getElementById('capture-note'),
+    fUrl: document.getElementById('f-url'),
+    fTitle: document.getElementById('f-title'),
+    fCategory: document.getElementById('f-category'),
+    fNote: document.getElementById('f-note')
+  };
+
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
+    });
+  }
+
+  function domainOf(url){
+    try{
+      var h = new URL(url).hostname.replace(/^www\./, "");
+      return h;
+    }catch(e){ return url; }
+  }
+
+  function normalizeUrl(raw){
+    var v = (raw || "").trim();
+    if(!v) return null;
+    if(!/^https?:\/\//i.test(v)) v = "https://" + v;
+    try{ new URL(v); return v; }catch(e){ return null; }
+  }
+
+  function fmtDate(ts){
+    if(!ts) return "";
+    var d = new Date(ts);
+    if(isNaN(d.getTime())) return "";
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function filteredItems(){
+    var q = state.query.trim().toLowerCase();
+    return state.items.filter(function(it){
+      if(!q) return true;
+      var hay = (it.title + " " + (it.note||"") + " " + domainOf(it.url) + " " + (it.category||"")).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+  }
+
+  function renderCards(){
+    var list = filteredItems();
+
+    if(!state.loaded){
+      els.body.innerHTML = '<div class="state"><p class="lead">Opening the ledger&hellip;</p><p class="sub">One moment.</p></div>';
+      return;
+    }
+
+    if(state.items.length === 0){
+      els.body.innerHTML = '<div class="state"><p class="lead">The list is empty, for now.</p><p class="sub">Add the first thing you’re craving, above.</p></div>';
+      return;
+    }
+
+    if(list.length === 0){
+      els.body.innerHTML = '<div class="state"><p class="lead">Nothing matches.</p><p class="sub">Try a different search or craving.</p></div>';
+      return;
+    }
+
+    var html = '<div class="grid">' + list.map(function(it){
+      var dom = domainOf(it.url);
+      var del = state.canWrite !== false
+        ? '<button class="card-del" data-del="' + escapeHtml(it.id) + '" title="Remove" aria-label="Remove">&times;</button>'
+        : '';
+      return (
+        '<article class="card">' +
+          '<div class="card-top">' +
+            '<span class="chip">' + escapeHtml(it.category || 'Other') + '</span>' +
+            del +
+          '</div>' +
+          '<a class="card-title" href="' + escapeHtml(it.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(it.title) + '</a>' +
+          '<div class="card-domain"><span class="dot"></span><span>' + escapeHtml(dom) + '</span></div>' +
+          (it.note ? '<p class="card-note">' + escapeHtml(it.note) + '</p>' : '') +
+          '<div class="card-foot">Added ' + escapeHtml(fmtDate(it.addedAt)) + '</div>' +
+        '</article>'
+      );
+    }).join('') + '</div>';
+
+    els.body.innerHTML = html;
+
+    Array.prototype.forEach.call(els.body.querySelectorAll('[data-del]'), function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-del');
+        removeItem(id);
+      });
+    });
+  }
+
+  function renderStat(){
+    if(!state.loaded){
+      els.statChip.textContent = "loading…";
+      return;
+    }
+    var n = state.items.length;
+    els.statChip.innerHTML = '<strong>' + n + '</strong> thing' + (n === 1 ? '' : 's') + ' kept';
+  }
+
+  function render(){
+    renderStat();
+    renderCards();
+  }
+
+  els.search.addEventListener('input', function(){
+    state.query = els.search.value;
+    renderCards();
+  });
+
+  // ---------- db wiring ----------
+  function initDb(){
+    if(!window.claude || typeof window.claude.use !== 'function'){
+      state.loaded = true;
+      els.captureNote.textContent = "This page can't save links in this view.";
+      els.submitBtn.disabled = true;
+      render();
+      return;
+    }
+
+    var timeoutId = setTimeout(function(){
+      if(!state.loaded){
+        els.body.innerHTML = '<div class="state"><p class="lead">Still connecting&hellip;</p><p class="sub">The list may take a moment to reach this view.</p></div>';
+      }
+    }, 10000);
+
+    window.claude.use('user').then(function(user){
+      if(!user) { state.canWrite = false; return; }
+      return user.can('data.write').then(function(v){ state.canWrite = v; });
+    }).catch(function(){ /* leave canWrite as null */ }).then(function(){
+      render();
+    });
+
+    window.claude.use('db').then(function(db){
+      if(!db){
+        clearTimeout(timeoutId);
+        state.loaded = true;
+        els.captureNote.textContent = "Sign in to save links on this page.";
+        els.submitBtn.disabled = true;
+        render();
+        return;
+      }
+      state.db = db;
+      state.col = db.collection('links');
+
+      state.col.orderBy('addedAt', 'desc').limit(500).onSnapshot(function(snap){
+        clearTimeout(timeoutId);
+        state.items = snap.docs.map(function(d){
+          var data = d.data() || {};
+          return {
+            id: d.id,
+            url: data.url || '',
+            title: data.title || data.url || 'Untitled',
+            category: data.category || 'Other',
+            note: data.note || '',
+            addedAt: data.addedAt || null
+          };
+        });
+        state.loaded = true;
+        render();
+      }, function(err){
+        clearTimeout(timeoutId);
+        state.loaded = true;
+        els.body.innerHTML = '<div class="state"><p class="lead">Couldn’t load the list.</p><p class="sub">' + escapeHtml(err && err.message ? err.message : 'Try reopening this page.') + '</p></div>';
+      });
+    }).catch(function(){
+      clearTimeout(timeoutId);
+      state.loaded = true;
+      els.body.innerHTML = '<div class="state"><p class="lead">Couldn’t reach the list.</p><p class="sub">Try reopening this page.</p></div>';
+    });
+  }
+
+  function setFormMsg(msg){
+    if(!msg){ els.formMsg.hidden = true; els.formMsg.textContent = ''; return; }
+    els.formMsg.hidden = false;
+    els.formMsg.textContent = msg;
+  }
+
+  els.form.addEventListener('submit', function(e){
+    e.preventDefault();
+    setFormMsg('');
+
+    var url = normalizeUrl(els.fUrl.value);
+    if(!url){ setFormMsg('That link doesn’t look right.'); els.fUrl.focus(); return; }
+
+    var title = els.fTitle.value.trim() || domainOf(url);
+    var category = els.fCategory.value || 'Other';
+    var note = els.fNote.value.trim();
+
+    if(!state.col){
+      setFormMsg('Can’t save right now — try again in a moment.');
+      return;
+    }
+
+    els.submitBtn.disabled = true;
+    els.submitBtn.textContent = 'Keeping…';
+
+    state.col.add({
+      url: url,
+      title: title.slice(0, 120),
+      category: category,
+      note: note.slice(0, 300),
+      addedAt: Date.now()
+    }).then(function(){
+      els.form.reset();
+      els.fCategory.value = category; // keep the last craving selected, convenience
+      setFormMsg('');
+    }).catch(function(err){
+      var code = err && err.code;
+      if(code === 'invalid_argument'){
+        setFormMsg('You don’t have permission to add to this list.');
+      } else {
+        setFormMsg('Couldn’t save that — try again.');
+      }
+    }).then(function(){
+      els.submitBtn.disabled = false;
+      els.submitBtn.textContent = 'Keep it';
+    });
+  });
+
+  function removeItem(id){
+    if(!state.col) return;
+    var prev = state.items.slice();
+    state.items = state.items.filter(function(it){ return it.id !== id; });
+    render();
+    state.col.doc(id).delete().catch(function(){
+      state.items = prev;
+      render();
+    });
+  }
+
+  render();
+  initDb();
+})();
+</script>
+
+</body></html>
